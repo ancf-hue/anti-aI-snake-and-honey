@@ -7,8 +7,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="preload" href="foto.webp" as="image" type="image/webp" />
     <title>Змея и Мёд — стеклянная охота</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -88,14 +89,39 @@
             -webkit-backdrop-filter: none !important;
         }
 
-        /* ===== НОВЫЙ ФОН (как в «Змея и Яблоки») ===== */
+        /* ✅ ИСПРАВЛЕНО: прозрачный фон + НЕ блокирует клики */
         #page-description {
-            background-color: #0a1f0a;               /* fallback */
-            background-image: url('./foto.webp');    /* только картинка, без градиента */
+            background: transparent !important;
+            position: relative;
+        }
+
+        /* Фоновое изображение — НЕ ПЕРЕХВАТЫВАЕТ КЛИКИ */
+        #page-description::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('foto.webp');
             background-repeat: no-repeat;
             background-position: center center;
             background-size: cover;
-            position: relative;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* Затемняющий градиент — НЕ ПЕРЕХВАТЫВАЕТ КЛИКИ */
+        #page-description::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5));
+            z-index: -1;
+            pointer-events: none;
         }
 
         .page-bg {
@@ -104,13 +130,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.35);          /* полупрозрачное затемнение */
-            backdrop-filter: none;                    /* убрали размытие */
-            -webkit-backdrop-filter: none;
+            background: radial-gradient(circle at center, rgba(20, 40, 15, 0.9) 0%, rgba(5, 5, 10, 0.98) 100%);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             z-index: -1;
         }
 
-        /* Остальные стили (кнопки, HUD, адаптив) — без изменений */
         .lang-btn-3d {
             position: absolute !important;
             top: calc(20px + env(safe-area-inset-top)) !important;
@@ -598,7 +623,6 @@
 
     <!-- СТРАНИЦА ОПИСАНИЯ -->
     <div id="page-description" class="page active">
-        <div class="page-bg"></div> <!-- затемнение -->
         <button class="lang-btn-3d" id="langToggleBtn" onclick="toggleLanguage()">RU / EN</button>
         <img src="favicon.ico" alt="Логотип" style="width:144px;height:144px;margin-bottom:16px;border-radius:24px;box-shadow:0 0 20px rgba(200,150,50,0.2);border:2px solid rgba(255,255,255,0.1);z-index:1;">
         <h1 class="title-main" id="txt-title1">Змея</h1>
@@ -825,7 +849,7 @@
 
     <!-- ОСНОВНОЙ КОД ИГРЫ -->
     <script>
-        console.log('🔥 Игра "Змея и Мёд" — фон как в "Змея и Яблоки", появляется сразу');
+        console.log('🔥 Игра "Змея и Мёд" — финальная версия');
 
         const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile/i.test(navigator.userAgent);
         const isLowPerf = isMobile || window.innerWidth < 768 || window.devicePixelRatio < 2;
@@ -1601,6 +1625,7 @@
         };
 
         window.startGame = function() {
+            console.log('🎮 startGame вызвана');
             initAudio();
             beeStingGameOver = false;
             invincible = 0; calmTimer = 0; stunTime = 0; honeyTaken = false;
@@ -1839,10 +1864,21 @@
             setTimeout(handleResize, 200);
         });
 
-        document.getElementById('txt-startBtn').addEventListener('click', startGame);
-        updateLanguage();
+        // ✅ Гарантированная привязка кнопки после загрузки DOM
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                const btn = document.getElementById('txt-startBtn');
+                if (btn) btn.addEventListener('click', startGame);
+                updateLanguage();
+            });
+        } else {
+            const btn = document.getElementById('txt-startBtn');
+            if (btn) btn.addEventListener('click', startGame);
+            updateLanguage();
+        }
+
         animate(0);
-        console.log('✅ Игра "Змея и Мёд" — фон как в "Змея и Яблоки", появляется сразу.');
+        console.log('✅ Игра "Змея и Мёд" — финальная версия готова');
     </script>
 </body>
 </html>
