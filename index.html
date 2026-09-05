@@ -7,6 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="preload" href="foto.webp" as="image" type="image/webp" />
     <title>Змея и Мёд — стеклянная охота</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
@@ -88,16 +89,37 @@
             -webkit-backdrop-filter: none !important;
         }
 
-        /* ИСПРАВЛЕНО: WebP фон с фолбэком */
+        /* ИСПРАВЛЕНО: Прозрачный фон для страницы описания, чтобы фото было видно */
         #page-description {
-            background-color: #0a1f0a;
-            background-image: 
-                linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
-                url('foto.webp');
+            background: transparent !important;
+            position: relative;
+        }
+
+        /* Фоновое изображение с градиентом */
+        #page-description::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('foto.webp');
             background-repeat: no-repeat;
             background-position: center center;
             background-size: cover;
-            position: relative;
+            z-index: -2;
+        }
+
+        /* Затемняющий градиент поверх изображения */
+        #page-description::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5));
+            z-index: -1;
         }
 
         .page-bg {
@@ -288,7 +310,6 @@
             box-shadow: 0 0 45px rgba(255, 200, 80, 0.3), 0 0 80px rgba(255, 200, 80, 0.15);
         }
 
-        /* КРАСНЫЕ КНОПКИ УПРАВЛЕНИЯ С ОКАНТОВКОЙ */
         .touch-btn {
             font-size: 28px !important;
             padding: 12px 22px !important;
@@ -826,7 +847,7 @@
 
     <!-- ОСНОВНОЙ КОД ИГРЫ -->
     <script>
-        console.log('🔥 Игра "Змея и Мёд" — WebP фон + красные кнопки');
+        console.log('🔥 Игра "Змея и Мёд" — прозрачный фон для фото');
 
         const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile/i.test(navigator.userAgent);
         const isLowPerf = isMobile || window.innerWidth < 768 || window.devicePixelRatio < 2;
@@ -1843,7 +1864,7 @@
         document.getElementById('txt-startBtn').addEventListener('click', startGame);
         updateLanguage();
         animate(0);
-        console.log('✅ Игра "Змея и Мёд" — WebP фон с фолбэком + красные кнопки.');
+        console.log('✅ Игра "Змея и Мёд" — прозрачный фон для фото.');
     </script>
 </body>
 </html>
