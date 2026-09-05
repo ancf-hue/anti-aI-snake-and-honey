@@ -6,8 +6,10 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
-    <link rel="preload" href="foto.webp" as="image" type="image/webp" />
     <title>Змея и Мёд — стеклянная охота</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous"></script>
     <style>
@@ -89,11 +91,37 @@
             -webkit-backdrop-filter: none !important;
         }
 
-        /* ✅ НАДЁЖНО: фото как прямой фон страницы (без псевдоэлементов и z-index) */
         #page-description {
-            background:
-                linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.5)),
-                url('foto.webp') center center / cover no-repeat !important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.5));
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #page-description > *:not(.bg-image):not(.bg-overlay) {
+            position: relative;
+            z-index: 2;
         }
 
         .page-bg {
@@ -595,6 +623,8 @@
 
     <!-- СТРАНИЦА ОПИСАНИЯ -->
     <div id="page-description" class="page active">
+        <img src="foto.webp?v=3.0" alt="Фон" class="bg-image" />
+        <div class="bg-overlay"></div>
         <button class="lang-btn-3d" id="langToggleBtn" onclick="toggleLanguage()">RU / EN</button>
         <img src="favicon.ico" alt="Логотип" style="width:144px;height:144px;margin-bottom:16px;border-radius:24px;box-shadow:0 0 20px rgba(200,150,50,0.2);border:2px solid rgba(255,255,255,0.1);z-index:1;">
         <h1 class="title-main" id="txt-title1">Змея</h1>
@@ -821,7 +851,7 @@
 
     <!-- ОСНОВНОЙ КОД ИГРЫ -->
     <script>
-        console.log('🔥 Игра "Змея и Мёд" — фон напрямую через background');
+        console.log('🔥 Игра "Змея и Мёд" — финальная версия v3.0');
 
         const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile/i.test(navigator.userAgent);
         const isLowPerf = isMobile || window.innerWidth < 768 || window.devicePixelRatio < 2;
@@ -1838,7 +1868,7 @@
         document.getElementById('txt-startBtn').addEventListener('click', startGame);
         updateLanguage();
         animate(0);
-        console.log('✅ Игра готова — фон напрямую через background');
+        console.log('✅ Игра готова — финальная версия v3.0');
     </script>
 </body>
 </html>
